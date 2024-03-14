@@ -1,12 +1,13 @@
 #include <iostream>
 #include <string>
+#include <iomanip>
 
 using namespace std;
 
 class SGPA_CAL
 {
 public:
-    int num_of_sub, external_sub;
+    int num_of_sub, external_sub, n;
     char ext_ch;
     string sub_name[100], p_sub_name[100], e_sub_name[100];
     int marks[100], pmarks[100], e_marks[100];
@@ -40,18 +41,23 @@ public:
     void CalCulateCGPA();
     // calculate and display practical
     void calPractical();
+
+    float calPracticalCredit();
+
+    // Function to display final output including details of each subject, total credit, and total grade points
+    void display_Final_output(int semesterNo);
 };
 
 // Function to input details of subjects
 void SGPA_CAL::input()
 {
-    cout << "How many subjects: ";
+    cout << "How many number of subject subjects: ";
     cin >> num_of_sub;
     for (int i = 0; i < num_of_sub; i++)
     {
         cout << "Enter subject name: ";
         cin >> sub_name[i];
-        cout << "Enter marks for subject " << sub_name[i] << ": ";
+        cout << "Enter marks of the  subject " << sub_name[i] << ": ";
         cin >> marks[i];
     }
 }
@@ -68,9 +74,9 @@ void SGPA_CAL ::External_sub()
         {
             cout << "Enter subject name: ";
             cin >> e_sub_name[i];
-            cout << "Enter marks for subject " << p_sub_name[i] << ": ";
+            cout << "Enter marks of the subject " << p_sub_name[i] << ": ";
             cin >> e_marks[i];
-            e_marks[i] *= 2;
+            e_marks[i] *= 2; // multiply by 2 because we need to convert the marks into outof 100
         }
         cout << "Marks : " << endl;
         cout << " Subjects Names and Marks Of : " << num_of_sub << " Subjects " << endl;
@@ -81,16 +87,16 @@ void SGPA_CAL ::External_sub()
         cout << endl;
         for (int i = 0; i < external_sub; i++)
         {
-            E_totalCredit += 2;
+            E_totalCredit += 2; //  adding 2 credits for each subject
         }
         for (int i = 0; i < external_sub; i++)
         {
-            E_TotalGradePoint += 2 * Grade(e_marks[i]);
+            E_TotalGradePoint += 2 * Grade(e_marks[i]); // recursivly add 2 credits for each and grade points stored in E_TotalGradePoint
         }
     }
     else
     {
-        return;
+        return; // if conditions false then directly return without any operations
     }
 }
 // Function to display subjects and their marks
@@ -109,7 +115,7 @@ float SGPA_CAL::Credit(float marks)
 {
     if (marks <= 100 && marks >= 36)
     {
-        return 4.0;
+        return 4.0; // returns 4 credit points if pass else return 0 credit points
     }
     else
     {
@@ -155,22 +161,32 @@ void SGPA_CAL::setCredit()
 {
     for (int i = 0; i < num_of_sub; i++)
     {
-        totalCredit += Credit(marks[i]);
+        totalCredit += Credit(marks[i]); // sum of total thoery credit points
     }
 }
 
+float SGPA_CAL::calPracticalCredit()
+{
+    if (n == 4)
+    {
+        return 1.5;
+    }
+    else if (n == 3)
+    {
+        return 2.0;
+    }
+}
 void SGPA_CAL::calPractical()
 {
-    int n;
 
-    cout << "Enter the marks of practical outoff 50  : " << endl;
-    cout << "How many practical subject : " << endl;
+    cout << "Enter the marks of practical out of 50  : " << endl;
+    cout << "number of  practical subject : " << endl;
     cin >> n;
     for (int i = 0; i < n; i++)
     {
         cout << "Enter subject name: ";
         cin >> p_sub_name[i];
-        cout << "Enter marks for subject " << p_sub_name[i] << ": ";
+        cout << "Enter marks of the subject " << p_sub_name[i] << ": ";
         cin >> pmarks[i];
         pmarks[i] *= 2;
     }
@@ -178,11 +194,11 @@ void SGPA_CAL::calPractical()
     display();
     for (int i = 0; i < n; i++)
     {
-        P_totalCredit += 2;
+        P_totalCredit += calPracticalCredit();
     }
     for (int i = 0; i < n; i++)
     {
-        P_TotalGradePoint += 2 * Grade(pmarks[i]);
+        P_TotalGradePoint += calPracticalCredit() * Grade(pmarks[i]);
     }
 }
 // Function to calculate and set total grade points
@@ -198,11 +214,12 @@ void SGPA_CAL::setGradePoint()
             cout << "Total Grade point of theory : " << TotalGradePoint << endl;
             return;
         }
-        TotalGradePoint += credit * grade;
+        TotalGradePoint += credit * grade; // Calculate total grade point
     }
 }
 
 // Function to calculate and display SGPA
+// Function to calculate SGPA
 float SGPA_CAL::CalCulateSGPA()
 {
     if (totalCredit == 0.0)
@@ -211,35 +228,23 @@ float SGPA_CAL::CalCulateSGPA()
     }
     if (ext_ch == 'Y' || ext_ch == 'y')
     {
-        cout << "Total Credit of External Subject : " << E_totalCredit << endl;
-        cout << "Total Grade Point of External Subject: " << E_TotalGradePoint << endl;
-        cout << "Total Credit of practical: " << P_totalCredit << endl;
-        cout << "Total Grade Point of Practical: " << P_TotalGradePoint << endl;
-        cout << "Total Grade point of theory : " << TotalGradePoint << endl;
-        cout << "Total Credit " << totalCredit << endl;
         All_credit = totalCredit + P_totalCredit + E_totalCredit;
         All_grades = TotalGradePoint + P_TotalGradePoint + E_TotalGradePoint;
-        cout << "All Credit: " << All_credit << "\t All Grade: " << All_grades << "\n";
 
-        SGPA = (TotalGradePoint + P_TotalGradePoint + E_TotalGradePoint) / (totalCredit + P_totalCredit + E_totalCredit); // Formula: SGPA = Total Grade Points / Total Credits
-        cout << "SGPA " << SGPA << endl;
+        SGPA = (TotalGradePoint + P_TotalGradePoint + E_TotalGradePoint) / All_credit;
         return SGPA;
     }
     else
     {
-        cout << "Total Credit of practical: " << P_totalCredit << endl;
-        cout << "Total Grade Point of Practical: " << P_TotalGradePoint << endl;
-        cout << "Total Grade point of theory : " << TotalGradePoint << endl;
-        cout << "Total Credit " << totalCredit << endl;
+        All_credit = totalCredit + P_totalCredit;
+        All_grades = TotalGradePoint + P_TotalGradePoint;
 
-        SGPA = (TotalGradePoint + P_TotalGradePoint) / (totalCredit + P_totalCredit); // Formula: SGPA = Total Grade Points / Total Credits
-        cout << "SGPA " << SGPA << endl;
+        SGPA = (TotalGradePoint + P_TotalGradePoint) / All_credit;
         return SGPA;
     }
 }
 
-// Function to calculate and display CGPA
-// Function to calculate and display CGPA
+// Function to calculate CGPA
 void SGPA_CAL::CalCulateCGPA()
 {
     int num_of_semesters;
@@ -251,15 +256,9 @@ void SGPA_CAL::CalCulateCGPA()
     for (int i = 0; i < num_of_semesters; i++)
     {
         cout << "Enter details for Semester " << i + 1 << ":" << endl;
-        semesterCalculators[i].input();
+        semesterCalculators[i].input();        // add this line to include theory subjects`
         semesterCalculators[i].External_sub(); // Add this line to include external subjects
         semesterCalculators[i].calPractical(); // Add this line to include practical subjects
-    }
-
-    for (int i = 0; i < num_of_semesters; i++)
-    {
-        cout << "Details for Semester " << i + 1 << ":" << endl;
-        semesterCalculators[i].display();
     }
 
     for (int i = 0; i < num_of_semesters; i++)
@@ -272,7 +271,7 @@ void SGPA_CAL::CalCulateCGPA()
         {
             if (semesterCalculators[i].marks[j] < 35)
             {
-                cout << "Student failed in Semester " << i + 1 << "." << endl;
+                cout << "Student failed in the Semester " << i + 1 << "." << endl;
                 cout << "CGPA: 0.0" << endl;
                 return;
             }
@@ -292,20 +291,42 @@ void SGPA_CAL::CalCulateCGPA()
     {
         CGPA = 0.0;
     }
-    cout << "Total Credit And Grades of Semester "
-         << " is : " << totalCreditCGPA << "\t " << totalGradePointCGPA << endl;
-
-    CGPA = totalGradePointCGPA / totalCreditCGPA; // Formula: CGPA = Total Grade Points / Total Credits
-    cout << "CGPA " << CGPA << endl;
+    CGPA = totalGradePointCGPA / totalCreditCGPA;
 }
 
-// Main function
+void SGPA_CAL::display_Final_output(int semesterNo)
+{
+    cout << "Details of Semester " << semesterNo << ":" << endl;
+
+    cout << setw(20) << "Subject" << setw(10) << "Marks" << setw(10) << "Credit" << setw(10) << "Grade" << setw(20) << "Total Grade Point" << endl;
+
+    for (int i = 0; i < num_of_sub; i++)
+    {
+        cout << setw(20) << sub_name[i] << setw(10) << marks[i] << setw(10) << Credit(marks[i]) << setw(10) << Grade(marks[i]) << setw(15) << Credit(marks[i]) * Grade(marks[i]) << endl;
+    }
+
+    if (ext_ch == 'Y' || ext_ch == 'y')
+    {
+        for (int i = 0; i < external_sub; i++)
+        {
+            cout << setw(20) << e_sub_name[i] << setw(10) << e_marks[i] << setw(10) << "2" << setw(10) << Grade(e_marks[i]) << setw(15) << 2 * Grade(e_marks[i]) << endl;
+        }
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << setw(20) << p_sub_name[i] << setw(10) << pmarks[i] / 2 << setw(10) << calPracticalCredit() << setw(10) << Grade(pmarks[i]) << setw(15) << calPracticalCredit() * Grade(pmarks[i]) << endl;
+    }
+
+    cout << setw(20) << "Total Credit: " << totalCredit + P_totalCredit + E_totalCredit << "\tTotal Grade Points: " << TotalGradePoint + P_TotalGradePoint + E_TotalGradePoint << endl;
+    cout << setw(20) << "SGPA: " << CalCulateSGPA() << endl;
+}
 int main()
 {
     int ch;
     SGPA_CAL sgpaCalculator;
     SGPA_CAL CGPACalculator;
-    cout << "Enter the choice: \n1. SGPA CALCULATOR \n2. CGPA CALCULATOR \n";
+    cout << "Enter your choice: \n1. SGPA CALCULATOR \n2. CGPA CALCULATOR \n";
     cin >> ch;
 
     switch (ch)
@@ -318,10 +339,12 @@ int main()
         sgpaCalculator.setCredit();
         sgpaCalculator.setGradePoint();
         sgpaCalculator.CalCulateSGPA();
+        sgpaCalculator.display_Final_output(1);
         break;
 
     case 2:
         CGPACalculator.CalCulateCGPA();
+        CGPACalculator.display_Final_output(CGPACalculator.num_of_sub);
         break;
 
     default:
