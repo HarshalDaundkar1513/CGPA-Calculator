@@ -178,8 +178,6 @@ void SGPA_CAL::calPractical()
         cin >> pmarks[i];
         pmarks[i] *= 2;
     }
-    cout << "MArks : " << endl;
-    display();
     for (int i = 0; i < n; i++)
     {
         P_totalCredit += calPracticalCredit();
@@ -238,7 +236,7 @@ float SGPA_CAL::calPracticalCredit()
     {
         return 1.5;
     }
-    else if (n == 3)
+    else if (n <= 3)
     {
         return 2.0;
     }
@@ -300,30 +298,33 @@ void SGPA_CAL::CalCulateCGPA()
 
 void SGPA_CAL::display_Final_output()
 {
-
-    cout << setw(20) << "Subject" << setw(10) << "Marks" << setw(10) << "Credit" << setw(10) << "Grade" << setw(15) << "Total Grade Point" << endl;
+    cout << "------------------------------------------------------------------------------" << endl;
+    cout << "|" << setw(20) << "Subject" << setw(10) << "Marks" << setw(10) << "Credit" << setw(10) << "Grade" << setw(15) << "Total Grade Point" << setw(10) << "|" << endl;
 
     for (int i = 0; i < num_of_sub; i++)
     {
-        cout << setw(20) << sub_name[i] << setw(10) << marks[i] << setw(10) << Credit(marks[i]) << setw(10) << Grade(marks[i]) << setw(15) << Credit(marks[i]) * Grade(marks[i]) << endl;
+        cout << "|" << setw(20) << sub_name[i] << setw(10) << marks[i] << setw(10) << Credit(marks[i]) << setw(10) << Grade(marks[i]) << setw(15) << Credit(marks[i]) * Grade(marks[i]) << setw(12) << "|" << endl;
     }
 
     if (ext_ch == 'Y' || ext_ch == 'y')
     {
         for (int i = 0; i < external_sub; i++)
         {
-            cout << setw(20) << e_sub_name[i] << setw(10) << e_marks[i] << setw(10) << "2" << setw(10) << Grade(e_marks[i]) << setw(15) << 2 * Grade(e_marks[i]) << endl;
+            cout << "|" << setw(20) << e_sub_name[i] << setw(10) << e_marks[i] << setw(10) << "2" << setw(10) << Grade(e_marks[i]) << setw(15) << 2 * Grade(e_marks[i]) << setw(12) << "|" << endl;
         }
     }
 
     for (int i = 0; i < n; i++)
     {
-        cout << setw(20) << p_sub_name[i] << setw(10) << pmarks[i] / 2 << setw(10) << calPracticalCredit() << setw(10) << Grade(pmarks[i]) << setw(15) << calPracticalCredit() * Grade(pmarks[i]) << endl;
+        cout << "|" << setw(20) << p_sub_name[i] << setw(10) << pmarks[i] / 2 << setw(10) << calPracticalCredit() << setw(10) << Grade(pmarks[i]) << setw(15) << calPracticalCredit() * Grade(pmarks[i]) << setw(12) << "|" << endl;
     }
 
-    cout << setw(20) << "Total Credit: " << totalCredit + P_totalCredit + E_totalCredit << "\tTotal Grade Points: " << TotalGradePoint + P_TotalGradePoint + E_TotalGradePoint << endl;
-    cout << setw(20) << "SGPA: " << CalCulateSGPA() << endl;
+    cout << "------------------------------------------------------------------------------" << endl;
+    cout << "|" << setw(20) << "Total Credit: " << totalCredit + P_totalCredit + E_totalCredit << "\tTotal Grade Points: " << TotalGradePoint + P_TotalGradePoint + E_TotalGradePoint << setw(32) << "|" << endl;
+    cout << "|" << setw(20) << "SGPA: " << CalCulateSGPA() << setw(56) << "|" << endl;
+    cout << "------------------------------------------------------------------------------" << endl;
 }
+
 int main()
 {
     int ch;
