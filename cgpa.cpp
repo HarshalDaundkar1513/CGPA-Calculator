@@ -7,7 +7,7 @@ using namespace std;
 class SGPA_CAL
 {
 public:
-    int num_of_sub, external_sub, n;
+    int num_of_sub, external_sub, n, num_of_semesters;
     char ext_ch;
     string sub_name[100], p_sub_name[100], e_sub_name[100];
     int marks[100], pmarks[100], e_marks[100];
@@ -43,9 +43,8 @@ public:
     void calPractical();
 
     float calPracticalCredit();
-
     // Function to display final output including details of each subject, total credit, and total grade points
-    void display_Final_output(int semesterNo);
+    void display_Final_output();
 };
 
 // Function to input details of subjects
@@ -165,17 +164,6 @@ void SGPA_CAL::setCredit()
     }
 }
 
-float SGPA_CAL::calPracticalCredit()
-{
-    if (n == 4)
-    {
-        return 1.5;
-    }
-    else if (n == 3)
-    {
-        return 2.0;
-    }
-}
 void SGPA_CAL::calPractical()
 {
 
@@ -190,8 +178,6 @@ void SGPA_CAL::calPractical()
         cin >> pmarks[i];
         pmarks[i] *= 2;
     }
-    cout << "MArks : " << endl;
-    display();
     for (int i = 0; i < n; i++)
     {
         P_totalCredit += calPracticalCredit();
@@ -244,10 +230,28 @@ float SGPA_CAL::CalCulateSGPA()
     }
 }
 
+float SGPA_CAL::calPracticalCredit()
+{
+    if (n == 4)
+    {
+        return 1.5;
+    }
+    else if (n <= 3 || n == 5)
+    {
+        return 2.0;
+    }
+    else if (n <= 2)
+    {
+        return 3.0;
+    }
+    else
+    {
+        return 0.0;
+    }
+}
 // Function to calculate CGPA
 void SGPA_CAL::CalCulateCGPA()
 {
-    int num_of_semesters;
     cout << "Enter the number of semesters: ";
     cin >> num_of_semesters;
 
@@ -261,6 +265,9 @@ void SGPA_CAL::CalCulateCGPA()
         semesterCalculators[i].calPractical(); // Add this line to include practical subjects
     }
 
+    float totalCreditCGPA = 0.0;
+    float totalGradePointCGPA = 0.0;
+
     for (int i = 0; i < num_of_semesters; i++)
     {
         semesterCalculators[i].setCredit();
@@ -271,18 +278,12 @@ void SGPA_CAL::CalCulateCGPA()
         {
             if (semesterCalculators[i].marks[j] < 35)
             {
-                cout << "Student failed in the Semester " << i + 1 << "." << endl;
+                cout << "Student failed in Semester " << i + 1 << "." << endl;
                 cout << "CGPA: 0.0" << endl;
                 return;
             }
         }
-    }
 
-    float totalCreditCGPA = 0.0;
-    float totalGradePointCGPA = 0.0;
-
-    for (int i = 0; i < num_of_semesters; i++)
-    {
         totalCreditCGPA += semesterCalculators[i].totalCredit + semesterCalculators[i].P_totalCredit + semesterCalculators[i].E_totalCredit;
         totalGradePointCGPA += semesterCalculators[i].TotalGradePoint + semesterCalculators[i].P_TotalGradePoint + semesterCalculators[i].E_TotalGradePoint;
     }
@@ -291,36 +292,47 @@ void SGPA_CAL::CalCulateCGPA()
     {
         CGPA = 0.0;
     }
-    CGPA = totalGradePointCGPA / totalCreditCGPA;
+    else
+    {
+        CGPA = totalGradePointCGPA / totalCreditCGPA;
+    }
+    for (int i = 0; i < num_of_semesters; i++)
+    {
+        cout << "Details of Semester " << i + 1 << ":" << endl;
+        semesterCalculators[i].display_Final_output();
+    }
+    cout << "CGPA: " << CGPA << endl;
 }
 
-void SGPA_CAL::display_Final_output(int semesterNo)
+void SGPA_CAL::display_Final_output()
 {
-    cout << "Details of Semester " << semesterNo << ":" << endl;
-
-    cout << setw(20) << "Subject" << setw(10) << "Marks" << setw(10) << "Credit" << setw(10) << "Grade" << setw(20) << "Total Grade Point" << endl;
+    cout << "------------------------------------------------------------------------------" << endl;
+    cout << "|" << setw(20) << "Subject" << setw(10) << "Marks" << setw(10) << "Credit" << setw(10) << "Grade" << setw(15) << "Total Grade Point" << setw(10) << "|" << endl;
 
     for (int i = 0; i < num_of_sub; i++)
     {
-        cout << setw(20) << sub_name[i] << setw(10) << marks[i] << setw(10) << Credit(marks[i]) << setw(10) << Grade(marks[i]) << setw(15) << Credit(marks[i]) * Grade(marks[i]) << endl;
+        cout << "|" << setw(20) << sub_name[i] << setw(10) << marks[i] << setw(10) << Credit(marks[i]) << setw(10) << Grade(marks[i]) << setw(15) << Credit(marks[i]) * Grade(marks[i]) << setw(12) << "|" << endl;
     }
 
     if (ext_ch == 'Y' || ext_ch == 'y')
     {
         for (int i = 0; i < external_sub; i++)
         {
-            cout << setw(20) << e_sub_name[i] << setw(10) << e_marks[i] << setw(10) << "2" << setw(10) << Grade(e_marks[i]) << setw(15) << 2 * Grade(e_marks[i]) << endl;
+            cout << "|" << setw(20) << e_sub_name[i] << setw(10) << e_marks[i] << setw(10) << "2" << setw(10) << Grade(e_marks[i]) << setw(15) << 2 * Grade(e_marks[i]) << setw(12) << "|" << endl;
         }
     }
 
     for (int i = 0; i < n; i++)
     {
-        cout << setw(20) << p_sub_name[i] << setw(10) << pmarks[i] / 2 << setw(10) << calPracticalCredit() << setw(10) << Grade(pmarks[i]) << setw(15) << calPracticalCredit() * Grade(pmarks[i]) << endl;
+        cout << "|" << setw(20) << p_sub_name[i] << setw(10) << pmarks[i] / 2 << setw(10) << calPracticalCredit() << setw(10) << Grade(pmarks[i]) << setw(15) << calPracticalCredit() * Grade(pmarks[i]) << setw(12) << "|" << endl;
     }
 
-    cout << setw(20) << "Total Credit: " << totalCredit + P_totalCredit + E_totalCredit << "\tTotal Grade Points: " << TotalGradePoint + P_TotalGradePoint + E_TotalGradePoint << endl;
-    cout << setw(20) << "SGPA: " << CalCulateSGPA() << endl;
+    cout << "------------------------------------------------------------------------------" << endl;
+    cout << "|" << setw(20) << "Total Credit: " << totalCredit + P_totalCredit + E_totalCredit << "\tTotal Grade Points: " << TotalGradePoint + P_TotalGradePoint + E_TotalGradePoint << setw(32) << "|" << endl;
+    cout << "|" << setw(20) << "SGPA: " << CalCulateSGPA() << setw(56) << "|" << endl;
+    cout << "------------------------------------------------------------------------------" << endl;
 }
+
 int main()
 {
     int ch;
@@ -339,12 +351,11 @@ int main()
         sgpaCalculator.setCredit();
         sgpaCalculator.setGradePoint();
         sgpaCalculator.CalCulateSGPA();
-        sgpaCalculator.display_Final_output(1);
+        sgpaCalculator.display_Final_output();
         break;
 
     case 2:
         CGPACalculator.CalCulateCGPA();
-        CGPACalculator.display_Final_output(CGPACalculator.num_of_sub);
         break;
 
     default:
